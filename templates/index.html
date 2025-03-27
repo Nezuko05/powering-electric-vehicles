@@ -16,6 +16,7 @@
             background-position: center;
             background-size: cover;
             height: 100vh;
+            
         }
 
         .navbar {
@@ -84,7 +85,7 @@
             height: 40px;
             background: transparent;
             border: 1px solid #ff7200;
-            margin-top: 13px;
+            margin-top: 20px;
             color: #fff;
             border-right: none;
             font-size: 16px;
@@ -99,11 +100,11 @@
             height: 40px;
             background: #ff7200;
             border: 2px solid #ff7200;
-            margin-top: 13px;
+            margin-top: 20px;
             color: #fff;
             font-size: 15px;
             border-bottom-right-radius: 5px;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 10px;
             transition: 0.2s ease;
             cursor: pointer;
         }
@@ -183,6 +184,7 @@
             transform: translate(0%, -5%);
             border-radius: 10px;
             padding: 25px;
+           
         }
 
         .form h2 {
@@ -195,6 +197,7 @@
             border-radius: 10px;
             margin: 2px;
             padding: 8px;
+            
         }
 
         .form input {
@@ -283,6 +286,38 @@
         .icons ion-icon:hover {
             color: #ff7200;
         }
+        .nav-buttons {
+            margin-right:auto;
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-right: auto;
+        }
+
+/* Login Button */
+.login {
+    background-color: #ff7200;
+    color: white;
+}
+
+.signup {
+    background-color: #ff7200;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}    
+
+
     </style>
 </head>
 
@@ -291,7 +326,7 @@
     <div class="main">
         <div class="navbar">
             <div class="icon">
-                <h2 class="logo">POWERING ELECTRIC VEHICLES</h2>
+                <h2 class="logo">EV Power</h2>
             </div>
 
             <div class="menu">
@@ -301,9 +336,15 @@
                     <li><a href="#">SERVICE</a></li>
                     <li><a href="#">DASHBOARD</a></li>
                     <li><a href="#">CONTACT</a></li>
+           
+                 
+                  
                     
                 </ul>
             </div>
+        
+           
+
 
             <div class="search">
                 <input class="srch" type="search" name="" placeholder="Type To text">
