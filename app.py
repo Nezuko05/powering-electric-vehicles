@@ -126,7 +126,7 @@ def avg_chargingRate():
     graph1_html = pio.to_html(fig, full_html=False)
     return graph1_html
 
-def charging_duration():
+def avg_charging_duration_by_charger_type():
     fig=go.Figure()
     df['Charging Duration (minutes)'] = df['Charging Duration (hours)'] * 60
 
@@ -143,7 +143,7 @@ def charging_duration():
         plot_bgcolor='black',
         paper_bgcolor='black',
         font_color='white'
-    ) 
+    )
     graph2_html = pio.to_html(fig, full_html=False)
     return graph2_html
 
@@ -549,7 +549,7 @@ def distance_driven_per_charge():
 @app.route('/charger_type_performance')
 def chargerType():
     graph1 = avg_chargingRate()
-    graph2 = charging_duration()
+    graph2 = avg_charging_duration_by_user_type()
     graph3 = avg_charging_cost()
     graph4 = charger_usage_frequency()
     return render_template('charger_type_performance.html', graph1=graph1, graph2=graph2, graph3=graph3, graph4=graph4)
