@@ -15,7 +15,7 @@
     html, body {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background-image: url("https://www.shutterstock.com/image-illustration/digitally-generated-image-over-blue-260nw-2031851357.jpg");
+      background-image: url("https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/image/rDtN98Qoishumwih/blurred-water-background_MkDDmPqu_thumb.jpg");
       background-size: cover;
       background-position: center;
       overflow: hidden;
@@ -34,7 +34,7 @@
     .logo {
       font-size: 28px;
       font-weight: bold;
-      color: #28a745;
+      color: white;
     }
 
     .nav-links {
@@ -133,13 +133,17 @@
     </ul>
   </div>
 
-  <div class="form-container">
-    <h2>Login Here</h2>
-    <input type="email" placeholder="Enter Email Here" required />
-    <input type="password" placeholder="Enter Password Here" required />
-    <button>Login</button>
-    <p class="link">Don't have an account? <a href="#">Sign up here</a></p>
-  </div>
-</body>
+    <div class="form-container">
+      <h2>Login Here</h2>
+      <form action="#" method="POST">
+        <input type="text" placeholder="Enter Email Here" required name="email_or_username" />
+        <input type="password" placeholder="Enter Password Here" required name="password" />
+        <button type="submit">Login</button>
+      </form>
+      <p class="link">Don't have an account? <a href="#">Sign up here</a></p>
+    </div>
+    
+  
+  </body>
 
-</html>
+  </html>
