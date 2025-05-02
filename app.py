@@ -549,19 +549,133 @@ def distance_driven_per_charge():
 #Analysis page connectivity
 @app.route('/charger_type_performance')
 def chargerType():
-    graph1 = avg_chargingRate()
-    graph2 = charger_type()
-    graph3 = avg_charging_cost()
-    graph4 = charger_usage_frequency()
-    return render_template('charger_type_performance.html', graph1=graph1, graph2=graph2, graph3=graph3, graph4=graph4)
+    try:
+        # Essential charger performance metrics
+        total_chargers = df['Charger Type'].nunique()
+        total_sessions = len(df)
+        
+        # Calculate average charging rate by charger type
+        avg_charging_rate = df.groupby('Charger Type')['Charging Rate (kW)'].mean().fillna(0).round(2)
+        
+        # Calculate average charging duration by charger type
+        avg_duration = df.groupby('Charger Type')['Charging Duration (hours)'].mean().fillna(0).round(2)
+        
+        # Calculate average energy consumed by charger type
+        avg_energy = df.groupby('Charger Type')['Energy Consumed (kWh)'].mean().fillna(0).round(2)
+        
+        # Calculate average cost by charger type
+        avg_cost = df.groupby('Charger Type')['Charging Cost (USD)'].mean().fillna(0).round(2)
+        
+        # Calculate charger utilization (sessions per charger type)
+        charger_usage = df['Charger Type'].value_counts()
+        charger_utilization = (charger_usage / total_sessions * 100).fillna(0).round(1)
+
+        # Get Fast charger metrics safely
+        fast_metrics = {
+            'duration': avg_duration.get('Fast', 0),
+            'utilization': charger_utilization.get('Fast', 0)
+        }
+
+        # Generate graphs
+        graph1 = avg_chargingRate()
+        graph2 = charger_type()
+        graph3 = avg_charging_cost()
+        graph4 = charger_usage_frequency()
+
+        return render_template('charger_type_performance.html',
+                             # Summary statistics
+                             total_chargers=total_chargers,
+                             total_sessions=total_sessions,
+                             
+                             # Fast charger metrics
+                             fast_duration=fast_metrics['duration'],
+                             fast_utilization=fast_metrics['utilization'],
+                             
+                             # Charger performance metrics
+                             avg_charging_rate=avg_charging_rate.to_dict(),
+                             avg_duration=avg_duration.to_dict(),
+                             avg_energy=avg_energy.to_dict(),
+                             avg_cost=avg_cost.to_dict(),
+                             charger_utilization=charger_utilization.to_dict(),
+                             
+                             # Graphs
+                             graph1=graph1,
+                             graph2=graph2,
+                             graph3=graph3,
+                             graph4=graph4)
+    except Exception as e:
+        print(f"Error in chargerType: {str(e)}")
+        return render_template('error.html', error="Error loading charger performance data")
 
 @app.route('/charging_behaviour_analysis')
 def chargingDuration():
+    # Ensure Charging Start Time is in datetime format
+    df['Charging Start Time'] = pd.to_datetime(df['Charging Start Time'], errors='coerce')
+    
+    # Essential summary statistics
+    active_users = df['User ID'].nunique()
+    total_sessions = len(df)
+    avg_sessions_per_user = round(total_sessions / active_users, 1)
+    avg_session_time = round(df['Charging Duration (hours)'].mean() * 60, 1)  # Convert to minutes
+
+    # Session duration metrics
+    short_sessions = len(df[df['Charging Duration (hours)'] < 0.5])  # Less than 30 minutes
+    long_sessions = len(df[df['Charging Duration (hours)'] > 2])  # More than 2 hours
+    short_session_percentage = round((short_sessions / total_sessions) * 100, 1)
+    long_session_percentage = round((long_sessions / total_sessions) * 100, 1)
+
+    # User preferences
+    fast_charger_users = df[df['Charger Type'].str.contains('Fast', case=False)]['User ID'].nunique()
+    fast_charger_preference = round((fast_charger_users / active_users) * 100, 1)
+    
+    amenities_stations = df[df['Charging Station Location'].str.contains('Mall|Restaurant|Hotel', case=False)]['User ID'].nunique()
+    amenities_preference = round((amenities_stations / active_users) * 100, 1)
+
+    # User segments - simplified to most reliable metrics
+    # Commuter segment (weekday morning/evening users)
+    df['is_weekend'] = pd.to_datetime(df['Charging Start Time']).dt.dayofweek.isin([5, 6])
+    commuter_mask = (~df['is_weekend']) & (df['Charging Start Time'].dt.hour.isin([7, 8, 9, 17, 18, 19]))
+    commuter_users = df[commuter_mask]['User ID'].nunique()
+    commuter_percentage = round((commuter_users / active_users) * 100, 1)
+    commuter_avg_duration = round(df[commuter_mask]['Charging Duration (hours)'].mean() * 60, 1)
+
+    # Residential segment (evening/overnight users)
+    residential_mask = (df['Charging Start Time'].dt.hour.isin([20, 21, 22, 23, 0, 1, 2, 3, 4, 5]))
+    residential_users = df[residential_mask]['User ID'].nunique()
+    residential_percentage = round((residential_users / active_users) * 100, 1)
+    residential_avg_duration = round(df[residential_mask]['Charging Duration (hours)'].mean() * 60, 1)
+
+    # Generate graphs
     graph5 = charging_duration()
     graph6 = energy_consumed()
     graph7 = charging_hour()
     graph8 = charging_rate()
-    return render_template('charging_behaviour_analysis.html', graph5=graph5, graph6=graph6, graph7=graph7, graph8=graph8)
+
+    return render_template('charging_behaviour_analysis.html',
+                         # Summary statistics
+                         active_users=active_users,
+                         avg_sessions_per_user=avg_sessions_per_user,
+                         avg_session_time=avg_session_time,
+                         
+                         # Session duration metrics
+                         short_session_percentage=short_session_percentage,
+                         long_session_percentage=long_session_percentage,
+                         
+                         # User preferences
+                         fast_charger_preference=fast_charger_preference,
+                         amenities_preference=amenities_preference,
+                         
+                         # User segments
+                         commuter_percentage=commuter_percentage,
+                         commuter_avg_duration=commuter_avg_duration,
+                         residential_percentage=residential_percentage,
+                         residential_avg_duration=residential_avg_duration,
+                         
+                         # Graphs
+                         graph5=graph5,
+                         graph6=graph6,
+                         graph7=graph7,
+                         graph8=graph8)
 
 @app.route('/energy_consumption_and_efficiency')
 def energyVsDuration():
@@ -584,11 +698,55 @@ def geographic():
 
 @app.route('/time_based_patterns')
 def timeBased():
-    graph18 = energy_consumed_by_hour()
-    graph19 = charging_session_per_day()
-    graph20= temperature_distributon()
-    graph21 = charging_sessions_by_time()
-    return render_template('time_based_patterns.html', graph18=graph18,graph19=graph19, graph20=graph20, graph21=graph21)
+    try:
+        # Ensure datetime format
+        df['Charging Start Time'] = pd.to_datetime(df['Charging Start Time'], errors='coerce')
+        
+        # Calculate total sessions
+        total_sessions = len(df)
+        
+        # Calculate average session duration
+        avg_session_duration = round(df['Charging Duration (hours)'].mean() * 60, 1)  # Convert to minutes
+        
+        # Calculate peak hour utilization
+        peak_hours = df[df['Charging Start Time'].dt.hour.isin([17, 18, 19])]  # 5 PM - 8 PM
+        peak_hour_sessions = len(peak_hours)
+        peak_hour_utilization = round((peak_hour_sessions / total_sessions) * 100, 1)
+        
+        # Calculate YoY growth (assuming data has multiple years)
+        df['Year'] = df['Charging Start Time'].dt.year
+        current_year = df['Year'].max()
+        last_year = current_year - 1
+        
+        current_year_sessions = len(df[df['Year'] == current_year])
+        last_year_sessions = len(df[df['Year'] == last_year])
+        
+        if last_year_sessions > 0:
+            yoy_growth = round(((current_year_sessions - last_year_sessions) / last_year_sessions) * 100, 1)
+        else:
+            yoy_growth = 0
+
+        # Generate graphs
+        graph18 = energy_consumed_by_hour()
+        graph19 = charging_session_per_day()
+        graph20 = temperature_distributon()
+        graph21 = charging_sessions_by_time()
+
+        return render_template('time_based_patterns.html',
+                             # Summary statistics
+                             total_sessions=total_sessions,
+                             avg_session_duration=avg_session_duration,
+                             yoy_growth=yoy_growth,
+                             peak_hour_utilization=peak_hour_utilization,
+                             
+                             # Graphs
+                             graph18=graph18,
+                             graph19=graph19,
+                             graph20=graph20,
+                             graph21=graph21)
+    except Exception as e:
+        print(f"Error in timeBased: {str(e)}")
+        return render_template('error.html', error="Error loading time-based patterns data")
 
 
 @app.route('/vehicle_and_battery_analysis')

@@ -3,13 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Charging Behavior Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #141414;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00ff9d;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--darker-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .container {
+            padding: 2rem 0;
+        }
+
+        .stats-card {
+            background: linear-gradient(145deg, var(--card-bg), var(--darker-bg));
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stats-card .icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .stats-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .graph-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .graph-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .graph-title {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .insights-section {
+            background-color: rgba(0, 255, 157, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insights-title {
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insights-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .insights-list li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .insights-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .insights-list li i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .metric-highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .footer {
+            background-color: var(--darker-bg);
+            color: var(--text-secondary);
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+        }
+
+        .behavior-pattern {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-title {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pattern-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pattern-stat {
+            text-align: center;
+        }
+
+        .pattern-stat .value {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .pattern-stat .label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+    </style>
 </head>
 <body>
-    {{graph5|safe}}
-    {{graph6|safe}} 
-    {{graph7|safe}} 
-    {{graph8|safe}} 
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line me-2"></i>EV Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-home me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/charging_behaviour_analysis"><i class="fas fa-user-clock me-1"></i>Behavior Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i>About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="text-center mb-4">Charging Behavior Analysis</h2>
+        
+        <!-- Summary Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="number">{{active_users}}</div>
+                    <div class="label">Active Users</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="number">{{avg_sessions_per_user}}</div>
+                    <div class="label">Avg. Sessions/User</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="number">{{avg_session_time}}min</div>
+                    <div class="label">Avg. Session Time</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="icon">
+                        <i class="fas fa-charging-station"></i>
+                    </div>
+                    <div class="number">{{fast_charger_preference}}%</div>
+                    <div class="label">Fast Charger Preference</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <h3 class="section-title mb-4">User Behavior Patterns</h3>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Charging Duration Patterns</h3>
+                    {{graph5|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Most charging sessions are completed within a short duration, indicating efficient charging infrastructure</li>
+                            <li><i class="fas fa-circle"></i>There's a significant number of long-duration sessions, suggesting overnight charging patterns</li>
+                            <li><i class="fas fa-circle"></i>The distribution shows a clear pattern of preferred charging durations among users</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Energy Consumption Trends</h3>
+                    {{graph6|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Energy consumption shows consistent patterns over time, indicating stable charging behavior</li>
+                            <li><i class="fas fa-circle"></i>Peak consumption periods align with typical charging times during the day</li>
+                            <li><i class="fas fa-circle"></i>There's a clear correlation between charging duration and energy consumption</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Charging Hour Distribution</h3>
+                    {{graph7|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Morning and evening hours show higher charging activity, aligning with commute patterns</li>
+                            <li><i class="fas fa-circle"></i>Weekend charging patterns differ significantly from weekday patterns</li>
+                            <li><i class="fas fa-circle"></i>Late night hours show consistent charging activity, indicating overnight charging preferences</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Charging Rate Analysis</h3>
+                    {{graph8|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Different charger types show distinct charging rate patterns</li>
+                            <li><i class="fas fa-circle"></i>Fast chargers demonstrate higher and more consistent charging rates</li>
+                            <li><i class="fas fa-circle"></i>The charging rate distribution varies significantly between charger types</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 EV Analytics Dashboard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
