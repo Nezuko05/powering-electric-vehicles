@@ -3,16 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Geographic & Station Level Insights</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #141414;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00ff9d;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--darker-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .container {
+            padding: 2rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .key-insights-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .key-insights-title {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .key-insight-card {
+            background: linear-gradient(145deg, var(--darker-bg), var(--card-bg));
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-insight-card .title {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-insight-card .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 3rem 0 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+            width: 100%;
+        }
+
+        .graph-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .graph-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .graph-container .plot-container {
+            flex: 1;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row {
+            margin: 0 -1rem;
+        }
+
+        .col-lg-6 {
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 992px) {
+            .col-lg-6 {
+                margin-bottom: 0;
+            }
+        }
+
+        .graph-title {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .insights-section {
+            background-color: rgba(0, 255, 157, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insights-title {
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insights-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .insights-list li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .insights-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .insights-list li i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .footer {
+            background-color: var(--darker-bg);
+            color: var(--text-secondary);
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    {{graph13|safe}}
-    {{graph14|safe}}
-    {{graph15|safe}}
-    {{graph16|safe}}
-    {{graph17|safe}}
-    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line me-2"></i>EV Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-home me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/geographic_and_station_level_insights"><i class="fas fa-map-marker-alt me-1"></i>Geographic Insights</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i>About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="main-title">Geographic & Station Level Insights</h2>
+        
+        <!-- Key Insights Section -->
+        <div class="key-insights-container">
+            <h3 class="key-insights-title">
+                <i class="fas fa-chart-line"></i>Key Insights
+            </h3>
+            <div class="key-insights-grid">
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-map-marked-alt"></i>
+                        Geographic Distribution
+                    </div>
+                    <div class="description">
+                        Analysis shows that charging stations are strategically placed in urban areas with high population density, 
+                        particularly near commercial districts and major transportation routes.
+                    </div>
+                </div>
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-charging-station"></i>
+                        Station Utilization
+                    </div>
+                    <div class="description">
+                        Peak utilization rates vary significantly by location, with urban stations showing higher usage during 
+                        business hours and residential areas during evenings.
+                    </div>
+                </div>
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Performance Metrics
+                    </div>
+                    <div class="description">
+                        Station performance varies based on location and time of day, with maintenance needs correlating 
+                        directly with usage patterns and environmental factors.
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Geographic Analysis -->
+        <h3 class="section-title">Geographic Distribution</h3>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Station Distribution Map</h3>
+                    {{graph13|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Stations are concentrated in urban areas</li>
+                            <li><i class="fas fa-circle"></i>Higher density in commercial districts</li>
+                            <li><i class="fas fa-circle"></i>Strategic placement near major highways</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Regional Usage Patterns</h3>
+                    {{graph14|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Peak usage varies by region</li>
+                            <li><i class="fas fa-circle"></i>Urban areas show higher utilization</li>
+                            <li><i class="fas fa-circle"></i>Weekend patterns differ from weekdays</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Station Level Analysis -->
+        <h3 class="section-title mb-4">Station Level Analysis</h3>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Station Utilization Rates</h3>
+                    {{graph15|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>High utilization during peak hours</li>
+                            <li><i class="fas fa-circle"></i>Variation in usage patterns</li>
+                            <li><i class="fas fa-circle"></i>Some stations show consistent demand</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Station Performance Metrics</h3>
+                    {{graph16|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Performance varies by location</li>
+                            <li><i class="fas fa-circle"></i>Maintenance needs correlate with usage</li>
+                            <li><i class="fas fa-circle"></i>Efficiency metrics show improvement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Analysis -->
+        <div class="row">
+            <div class="col-12">
+                <div class="graph-container">
+                    <h3 class="graph-title">Detailed Station Analysis</h3>
+                    {{graph17|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Comprehensive view of station metrics</li>
+                            <li><i class="fas fa-circle"></i>Detailed performance analysis</li>
+                            <li><i class="fas fa-circle"></i>Station-specific trends and patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 EV Analytics Dashboard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

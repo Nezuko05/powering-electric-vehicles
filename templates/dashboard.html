@@ -1,190 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Interactive Dashboard</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20211118/pngtree-technology-round-dashboard-image_908915.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #141414;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00ff9d;
+        }
 
-    h1 {
-      font-size: 25px;
-    }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
 
-    .chart-container {
-      position: relative;
-      height: 400px;
-      width: 100%;
-    }
+        .navbar {
+            background-color: var(--darker-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
 
-    h2 {
-      font-size: 16px;
-    }
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
 
-    p {
-      font-size: 16px;
-    }
+        .container {
+            padding: 2rem 0;
+           
+        }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.7);
-      overflow: hidden;
-    }
+        .main-title {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            font-weight: 600;
+        }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      border-bottom: 1px solid black;
-    }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
 
-    .header-title {
-      font-size: 20px;
-      font-weight: bold;
-      padding: 8px;
-    }
+        .analysis-card {
+            background: linear-gradient(145deg, var(--darker-bg), var(--card-bg));
+            border-radius: 10px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-    .header-info {
-      flex: 1;
-      margin-left: 10px;
-      padding: 8px;
-      font-size: 14px;
-    }
+        .analysis-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            color: var(--accent-color);
+        }
 
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+        .analysis-card .icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
 
-    .sidebar {
-      width: 260px;
-      border-right: 1px solid black;
-      padding: 15px;
-      overflow-y: auto;
-    }
+        .analysis-card .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
 
-    .sidebar ul {
-      list-style-type: disc;
-      padding-left: 15px;
-    }
+        .analysis-card .description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
 
-    .sidebar li {
-      margin-bottom: 8px;
-    }
-
-    .sidebar a {
-      text-decoration: none;
-      color: black;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .sidebar a:hover {
-      text-decoration: underline;
-    }
-
-    .sidebar a.active-link {
-      color: blue;
-      font-weight: bold;
-    }
-
-    .content {
-      flex: 1;
-      padding: 15px;
-      border-left: 1px solid black;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content-box {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 15px;
-      border-radius: 6px;
-      flex: 1;
-      overflow-y: auto  ;
-      
-    }
-  </style>
+        .footer {
+            background-color: var(--darker-bg);
+            color: var(--text-secondary);
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: 3rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="header-title"><h1>DASHBOARD</h1></div>
-      
-    </div>
-    <div class="main">
-      <div class="sidebar">
-        <ul>
-          <li><a id="link-charger" href="/charger_type_performance"><h2>Charger Type Performance</h2></a></li><br>
-          <li><a id="link-charging" href="charging_behaviour_analysis"><h2>Charging Behaviour Analysis</h2></a></li><br>
-          <li><a id="link-energy" href="energy_consumption_and_efficiency"><h2>Energy Consumption & Efficiency</h2></a></li><br>
-          <li><a id="link-geo" href="geographic_and_station_level_insights"><h2>Geographic and Station-Level Insights</h2></a></li><br>
-          <li><a id="link-time" href="/time_based_patterns"><h2>Time-Based Patterns</h2></a></li><br>
-          <li><a id="link-user" href="/user_type_and_behaviour_segmentation"><h2>User Type & Behavior Segmentation</h2></a></li><br>
-          <li><a id="link-vehicle" href="/vehicle_and_battery_analysis"><h2>Vehicle & Battery Analysis</h2></a></li><br>
-          
-         
-        </ul>
-      </div>
-      <div class="content">
-        <div class="content-box" id="display-area">
-          <h1><b>WELCOME TO OUR DASHBOARD</b> </h1>
-          <style>
-              .content-box h1 {
-    text-align: center;
-    font-weight: bold;
-    font-size: 48px; /* You can adjust this value as you like */
-    color: white; /* Change this to your desired color */
-    margin-top: -15px; /* Adjust the top margin as needed */
-}
-
-          </style>
-
-          
-      
-          
-
-          </p>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line me-2"></i>EV Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/prediction"><i class="fas fa-chart-line me-1"></i>Prediction</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="main-title">Welcome to EV Analytics Dashboard</h2>
+        
+        <div class="dashboard-grid">
+            <a href="/charger_type_performance" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="title">Charger Type Performance</div>
+                <div class="description">
+                    Analysis of different charger types and their performance metrics
+                </div>
+            </a>
+
+            <a href="/charging_behaviour_analysis" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-charging-station"></i>
+                </div>
+                <div class="title">Charging Behaviour Analysis</div>
+                <div class="description">
+                    Insights into user charging patterns and station usage trends
+                </div>
+            </a>
+
+            <a href="/energy_consumption_and_efficiency" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="title">Energy Consumption & Efficiency</div>
+                <div class="description">
+                    Detailed analysis of power usage and efficiency metrics
+                </div>
+            </a>
+
+            <a href="/geographic_and_station_level_insights" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="title">Geographic & Station Insights</div>
+                <div class="description">
+                    Location-based analysis and station performance metrics
+                </div>
+            </a>
+
+            <a href="/time_based_patterns" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="title">Time-Based Patterns</div>
+                <div class="description">
+                    Analysis of usage patterns across different time periods
+                </div>
+            </a>
+
+            <a href="/user_type_and_behaviour_segmentation" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="title">User Type & Behavior</div>
+                <div class="description">
+                    User segmentation and behavior pattern analysis
+                </div>
+            </a>
+
+            <a href="/vehicle_and_battery_analysis" class="analysis-card">
+                <div class="icon">
+                    <i class="fas fa-car-battery"></i>
+                </div>
+                <div class="title">Vehicle & Battery Analysis</div>
+                <div class="description">
+                    Comprehensive analysis of vehicle and battery performance
+                </div>
+            </a>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const data = {
-      charging: "<h1>Charging Behavior Analysis</h1><p>Displays trends in user charging patterns, frequency, and station usage.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus interdum massa in nisi elementum, ac varius turpis laoreet. Sed vel mauris at eros tristique vehicula.</p><p>Additional mock content to demonstrate scrolling...</p><p>More and more text to ensure scrolling works properly...</p><p>Final paragraph to make sure there's enough overflow.</p>",
-      energy: "<h2>Energy Consumption & Efficiency</h2><p>Insights into power usage, efficiency, and cost-saving opportunities.</p>",
-      time: "<h2>Time-Based Patterns</h2><p>Graphs and data for peak usage times and daily/weekly/monthly trends.</p>",
-      geo: "<h2>Geographic and Station-Level Insights</h2><p>Breakdown by location and performance of charging stations.</p>",
-      vehicle: "<h2>Vehicle & Battery Analysis</h2><p>Details on battery health, vehicle performance, and usage statistics.</p>",
-      user: "<h2>User Type & Behavior Segmentation</h2><p>User categorization based on frequency, vehicle type, and location.</p>",
-      charger: "<h2>Charger Type Performance</h2><p>Comparison of charger types (e.g., fast vs standard) and their efficiency.</p>"
-    };
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 EV Analytics Dashboard. All rights reserved.</p>
+        </div>
+    </footer>
 
-    let currentActive = null;
-
-    function updateContent(key, element) {
-      document.getElementById('display-area').innerHTML = data[key];
-
-      if (currentActive) {
-        currentActive.classList.remove('active-link');
-      }
-
-      element.classList.add('active-link');
-      currentActive = element;
-    }
-  </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,12 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Vehicle & Battery Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #141414;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00ff9d;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--darker-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .container {
+            padding: 2rem 0;
+        }
+
+        .main-title {
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .key-insights-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .key-insights-title {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .key-insight-card {
+            background: linear-gradient(145deg, var(--darker-bg), var(--card-bg));
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .key-insight-card .title {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-insight-card .description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 3rem 0 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+            width: 100%;
+        }
+
+        .graph-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .graph-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .graph-container .plot-container {
+            flex: 1;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row {
+            margin: 0 -1rem;
+        }
+
+        .col-lg-6 {
+            padding: 0 1rem;
+        }
+
+        .insights-section {
+            background-color: rgba(0, 255, 157, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insights-title {
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insights-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .insights-list li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .insights-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .insights-list li i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .footer {
+            background-color: var(--darker-bg);
+            color: var(--text-secondary);
+            padding: 1rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    {{graph22|safe}}
-    {{graph23|safe}}
-    {{graph24|safe}}
-    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line me-2"></i>EV Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-home me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/vehicle_and_battery_analysis"><i class="fas fa-car-battery me-1"></i>Vehicle Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i>About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2 class="main-title">Vehicle & Battery Analysis</h2>
+        
+        <!-- Key Insights Section -->
+        <div class="key-insights-container">
+            <h3 class="key-insights-title">
+                <i class="fas fa-chart-line"></i>Key Insights
+            </h3>
+            <div class="key-insights-grid">
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-car"></i>
+                        Vehicle Distribution
+                    </div>
+                    <div class="description">
+                        Analysis of vehicle types and models using the charging network, 
+                        providing insights into the most common EVs and their charging patterns.
+                    </div>
+                </div>
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-battery-three-quarters"></i>
+                        Battery Performance
+                    </div>
+                    <div class="description">
+                        Comprehensive analysis of battery performance across different vehicle types, 
+                        including charging efficiency and battery health metrics.
+                    </div>
+                </div>
+                <div class="key-insight-card">
+                    <div class="title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Performance Metrics
+                    </div>
+                    <div class="description">
+                        Detailed metrics on vehicle performance, including charging speed, 
+                        energy consumption, and overall efficiency across different models.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Analysis -->
+        <h3 class="section-title">Vehicle Analysis</h3>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Vehicle Type Distribution</h3>
+                    {{graph22|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>SUV segment dominates the EV market with highest adoption rate</li>
+                            <li><i class="fas fa-circle"></i>Compact EVs show growing popularity in urban areas</li>
+                            <li><i class="fas fa-circle"></i>Sedan category maintains steady market presence</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="graph-container">
+                    <h3 class="graph-title">Model Performance</h3>
+                    {{graph23|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Luxury models show highest charging efficiency</li>
+                            <li><i class="fas fa-circle"></i>Mid-range vehicles balance cost and performance</li>
+                            <li><i class="fas fa-circle"></i>Entry-level models focus on affordability over speed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battery Analysis -->
+        <h3 class="section-title">Battery Analysis</h3>
+        <div class="row">
+            <div class="col-12">
+                <div class="graph-container">
+                    <h3 class="graph-title">Battery Performance Analysis</h3>
+                    {{graph24|safe}}
+                    <div class="insights-section">
+                        <h4 class="insights-title">
+                            <i class="fas fa-lightbulb"></i>Key Insights
+                        </h4>
+                        <ul class="insights-list">
+                            <li><i class="fas fa-circle"></i>Battery health remains stable with proper charging patterns</li>
+                            <li><i class="fas fa-circle"></i>Fast charging impacts long-term battery performance</li>
+                            <li><i class="fas fa-circle"></i>Temperature significantly affects charging efficiency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 EV Analytics Dashboard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
