@@ -4,6 +4,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
+import pickle
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
 
 from flask_sqlalchemy import SQLAlchemy
@@ -42,6 +45,7 @@ with app.app_context():
 
 
 df = pd.read_csv('ev_charging_patterns dataset.csv')
+cluster_df = pd.read_csv('ev_Clusters.csv')
 
 @app.route('/')
 def index():
@@ -765,11 +769,116 @@ def userType():
     graph28 = distance_driven_per_charge()
     return render_template('user_type_and_behaviour_segmentation.html', graph25=graph25, graph26=graph26,graph27=graph27, graph28=graph28)
 
+def get_cluster_profile(cluster_id):
+    cluster_profiles = {
+        0: "High-Capacity Long-Distance User",
+        1: "Efficient Regular User",
+        2: "Short-Range Urban User",
+        3: "Premium Fast-Charging User",
+        4: "Economy User"
+    }
+    
+    characteristics = {
+        0: [
+            "Highest battery capacity user",
+            "Tends to drive long distances between charges",
+            "High energy consumption pattern",
+            "Uses moderate to high charging rates"
+        ],
+        1: [
+            "Medium battery capacity user",
+            "Drives moderate distances",
+            "Shows efficient energy consumption",
+            "Uses standard charging rates"
+        ],
+        2: [
+            "Lower battery capacity user",
+            "Drives shorter distances",
+            "Shows lower energy consumption",
+            "Prefers quick charging sessions"
+        ],
+        3: [
+            "High battery capacity user",
+            "Drives medium to long distances",
+            "Uses high charging rates",
+            "Maintains higher end state of charge"
+        ],
+        4: [
+            "Lowest battery capacity user",
+            "Drives shortest distances",
+            "Shows minimal energy consumption",
+            "Uses lower charging rates"
+        ]
+    }
+    return cluster_profiles[cluster_id], characteristics[cluster_id]
+
+# Load the model and scalers
+with open('analysis/ev_dt_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        try:
+            # Get form data
+            input_data = pd.DataFrame({
+                'Vehicle Model': [request.form['vehicleModel']],
+                'Battery Capacity (kWh)': [float(request.form['batteryCapacity'])],
+                'Charging Station Location': [request.form['location']],
+                'Energy Consumed (kWh)': [float(request.form['energyConsumed'])],
+                'Charging Duration (hours)': [float(request.form['chargingDuration'])],
+                'Charging Rate (kW)': [float(request.form['chargingRate'])],
+                'Charging Cost (USD)': [float(request.form['chargingCost'])],
+                'Time of Day': [request.form['timeOfDay']],
+                'Day of Week': [request.form['dayOfWeek']],
+                'State of Charge (Start %)': [float(request.form['socStart'])],
+                'State of Charge (End %)': [float(request.form['socEnd'])],
+                'Distance Driven (since last charge) (km)': [float(request.form['distance'])],
+                'Temperature (°C)': [float(request.form['temperature'])],
+                'Vehicle Age (years)': [float(request.form['vehicleAge'])],
+                'Charger Type': [request.form['chargerType']],
+                'User Type': [request.form['userType']]
+            })
+
+            # Prepare the data for prediction using the same preprocessing as in training
+            input_encoded = input_data.copy()
+            
+            # Encode categorical features
+            for col in ['Vehicle Model', 'Charging Station Location', 'Time of Day', 'Day of Week', 'Charger Type', 'User Type']:
+                le = LabelEncoder()
+                le.fit(df[col])
+                input_encoded[col] = le.transform(input_data[col])
+            
+            # Scale numerical features
+            numeric_cols = [
+                'Battery Capacity (kWh)', 'Energy Consumed (kWh)', 'Charging Duration (hours)',
+                'Charging Rate (kW)', 'Charging Cost (USD)', 'State of Charge (Start %)',
+                'State of Charge (End %)', 'Distance Driven (since last charge) (km)',
+                'Temperature (°C)', 'Vehicle Age (years)'
+            ]
+            
+            scaler = MinMaxScaler()
+            scaler.fit(df[numeric_cols])
+            input_encoded[numeric_cols] = scaler.transform(input_encoded[numeric_cols])
+
+            # Make prediction
+            prediction = model.predict(input_encoded)[0]
+            cluster_name, characteristics = get_cluster_profile(prediction)
+
+            return render_template('predict.html', 
+                                prediction={'cluster_name': cluster_name, 
+                                          'characteristics': characteristics})
+        except Exception as e:
+            flash(f'Error making prediction: {str(e)}', 'danger')
+            return render_template('predict.html')
+
+    return render_template('predict.html')
+
 if __name__ == '__main__':
-    app.run(debug=True)       
-            
-            
-       
-            
-        
+    app.run(debug=True)
+
+
+
+
+
 
