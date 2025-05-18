@@ -4,7 +4,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
-
+import pickle
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import bcrypt
@@ -42,6 +43,50 @@ with app.app_context():
 
 
 df = pd.read_csv('ev_charging_patterns dataset.csv')
+
+# Load the model
+with open('ship_performance_dt_model.pkl', 'rb') as f:
+    dt_model = pickle.load(f)
+
+# Prepare encoders and scaler using the original dataset
+df_pred = pd.read_csv('ev_charging_patterns dataset.csv')
+
+# Drop columns as in notebook
+for col in ['User ID', 'Charging Start Time', 'Charging End Time', 'Charging Station ID']:
+    if col in df_pred.columns:
+        df_pred = df_pred.drop(columns=[col])
+
+# Identify categorical and numerical columns
+object_df = df_pred.select_dtypes(include='object').columns.tolist()
+numeric_df = df_pred.select_dtypes(exclude='object').columns.tolist()
+
+# Fit LabelEncoders for each categorical column
+label_encoders = {}
+for col in object_df:
+    le = LabelEncoder()
+    le.fit(df_pred[col])
+    label_encoders[col] = le
+
+# Fit MinMaxScaler for numerical columns
+scaler = MinMaxScaler()
+scaler.fit(df_pred[numeric_df])
+
+# Cluster profile mapping
+cluster_profiles = {
+    0: "High-Capacity Long-Distance User",
+    1: "Efficient Regular User",
+    2: "Short-Range Urban User",
+    3: "Premium Fast-Charging User",
+    4: "Economy User"
+}
+
+cluster_characteristics = {
+    0: ["Highest battery capacity user", "Tends to drive long distances between charges", "High energy consumption pattern", "Uses moderate to high charging rates"],
+    1: ["Medium battery capacity user", "Drives moderate distances", "Shows efficient energy consumption", "Uses standard charging rates"],
+    2: ["Lower battery capacity user", "Drives shorter distances", "Shows lower energy consumption", "Prefers quick charging sessions"],
+    3: ["High battery capacity user", "Drives medium to long distances", "Uses high charging rates", "Maintains higher end state of charge"],
+    4: ["Lowest battery capacity user", "Drives shortest distances", "Shows minimal energy consumption", "Uses lower charging rates"]
+}
 
 @app.route('/')
 def index():
@@ -764,6 +809,41 @@ def userType():
     graph27 = charging_frequency_over_time()
     graph28 = distance_driven_per_charge()
     return render_template('user_type_and_behaviour_segmentation.html', graph25=graph25, graph26=graph26,graph27=graph27, graph28=graph28)
+
+@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        # Collect user input
+        input_data = {col: request.form.get(col) for col in [
+            'Vehicle Model', 'Battery Capacity (kWh)', 'Charging Station Location', 'Energy Consumed (kWh)',
+            'Charging Duration (hours)', 'Charging Rate (kW)', 'Charging Cost (USD)', 'Time of Day',
+            'Day of Week', 'State of Charge (Start %)', 'State of Charge (End %)',
+            'Distance Driven (since last charge) (km)', 'Temperature (°C)', 'Vehicle Age (years)',
+            'Charger Type', 'User Type']}
+        # Convert numerics
+        for col in numeric_df:
+            try:
+                input_data[col] = float(input_data[col])
+            except:
+                input_data[col] = 0.0
+        # DataFrame for processing
+        user_input = pd.DataFrame([input_data])
+        # Encode categoricals
+        for col in object_df:
+            le = label_encoders[col]
+            try:
+                user_input[col] = le.transform(user_input[col])
+            except:
+                user_input[col] = 0  # fallback if unseen
+        # Scale numerics
+        user_input[numeric_df] = scaler.transform(user_input[numeric_df])
+        # Predict
+        pred = dt_model.predict(user_input)[0]
+        profile = cluster_profiles.get(pred, "Unknown")
+        characteristics = cluster_characteristics.get(pred, [])
+        return render_template('prediction.html', prediction=pred, profile=profile, characteristics=characteristics, input_data=input_data)
+    # GET: show form
+    return render_template('prediction.html', prediction=None)
 
 if __name__ == '__main__':
     app.run(debug=True)       

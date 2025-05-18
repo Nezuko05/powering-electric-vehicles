@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV User Cluster Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #181a1b;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+        .form-card {
+            background: #23272b;
+            border-radius: 1.2rem;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.6);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4f8cff;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .form-desc {
+            color: #b0b8c1;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        label {
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            color: #e0e6ed;
+        }
+        .form-control {
+            background: #181a1b;
+            color: #fff;
+            border: 1.5px solid #444;
+            border-radius: 0.5rem;
+            padding: 0.85rem 1rem;
+            font-size: 1rem;
+        }
+        .form-control:focus {
+            background: #23272b;
+            color: #fff;
+            border-color: #4f8cff;
+            box-shadow: 0 0 0 2px #4f8cff33;
+        }
+        .submit-btn {
+            background: linear-gradient(90deg, #4f8cff 60%, #357ae8 100%);
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.9rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover {
+            background: linear-gradient(90deg, #357ae8 60%, #4f8cff 100%);
+        }
+        .result-card {
+            background: #212e23;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            margin-top: 2.5rem;
+            padding: 2rem 1.5rem;
+            color: #fff;
+            max-width: 600px;
+            width: 100%;
+        }
+        .result-title {
+            color: #4f8cff;
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+        .badge-result {
+            background: #f8f9fa;
+            color: #23272b;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1.2rem;
+        }
+        .footer {
+            color: #bbb;
+            text-align: center;
+            margin-top: 3rem;
+            padding-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 600px) {
+            .form-card, .result-card {
+                padding: 1.2rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <div style="width:100%">
+        <div class="form-card mx-auto">
+            <div class="form-title">EV User Cluster Prediction</div>
+            <div class="form-desc">Enter your EV and charging details to predict your usage cluster</div>
+            <form method="POST" action="{{ url_for('predict') }}">
+                <div class="mb-3">
+                    <label for="vehicle_model">Vehicle Model</label>
+                    <input type="text" class="form-control" id="vehicle_model" name="Vehicle Model" required value="{{ input_data['Vehicle Model'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="battery_capacity">Battery Capacity (kWh)</label>
+                    <input type="number" step="0.01" class="form-control" id="battery_capacity" name="Battery Capacity (kWh)" required value="{{ input_data['Battery Capacity (kWh)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="charging_station_location">Charging Station Location</label>
+                    <input type="text" class="form-control" id="charging_station_location" name="Charging Station Location" required value="{{ input_data['Charging Station Location'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="energy_consumed">Energy Consumed (kWh)</label>
+                    <input type="number" step="0.01" class="form-control" id="energy_consumed" name="Energy Consumed (kWh)" required value="{{ input_data['Energy Consumed (kWh)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="charging_duration">Charging Duration (hours)</label>
+                    <input type="number" step="0.01" class="form-control" id="charging_duration" name="Charging Duration (hours)" required value="{{ input_data['Charging Duration (hours)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="charging_rate">Charging Rate (kW)</label>
+                    <input type="number" step="0.01" class="form-control" id="charging_rate" name="Charging Rate (kW)" required value="{{ input_data['Charging Rate (kW)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="charging_cost">Charging Cost (USD)</label>
+                    <input type="number" step="0.01" class="form-control" id="charging_cost" name="Charging Cost (USD)" required value="{{ input_data['Charging Cost (USD)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="time_of_day">Time of Day</label>
+                    <input type="text" class="form-control" id="time_of_day" name="Time of Day" required value="{{ input_data['Time of Day'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="day_of_week">Day of Week</label>
+                    <input type="text" class="form-control" id="day_of_week" name="Day of Week" required value="{{ input_data['Day of Week'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="soc_start">State of Charge (Start %)</label>
+                    <input type="number" step="0.01" class="form-control" id="soc_start" name="State of Charge (Start %)" required value="{{ input_data['State of Charge (Start %)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="soc_end">State of Charge (End %)</label>
+                    <input type="number" step="0.01" class="form-control" id="soc_end" name="State of Charge (End %)" required value="{{ input_data['State of Charge (End %)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="distance_driven">Distance Driven (since last charge) (km)</label>
+                    <input type="number" step="0.01" class="form-control" id="distance_driven" name="Distance Driven (since last charge) (km)" required value="{{ input_data['Distance Driven (since last charge) (km)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="temperature">Temperature (°C)</label>
+                    <input type="number" step="0.01" class="form-control" id="temperature" name="Temperature (°C)" required value="{{ input_data['Temperature (°C)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="vehicle_age">Vehicle Age (years)</label>
+                    <input type="number" step="0.01" class="form-control" id="vehicle_age" name="Vehicle Age (years)" required value="{{ input_data['Vehicle Age (years)'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="charger_type">Charger Type</label>
+                    <input type="text" class="form-control" id="charger_type" name="Charger Type" required value="{{ input_data['Charger Type'] if input_data else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="user_type">User Type</label>
+                    <input type="text" class="form-control" id="user_type" name="User Type" required value="{{ input_data['User Type'] if input_data else '' }}">
+                </div>
+                <button type="submit" class="submit-btn">Predict</button>
+            </form>
+        </div>
+        {% if prediction is not none %}
+        <div class="result-card mx-auto">
+            <div class="result-title">Prediction Result</div>
+            <div class="text-center mb-3">
+                <span class="badge-result">Predicted Cluster: {{ prediction }}</span>
+            </div>
+            <div class="text-center mb-3">
+                <span class="badge bg-info">Profile: {{ profile }}</span>
+            </div>
+            <hr class="bg-light">
+            <div>
+                <h6>Characteristics:</h6>
+                <ul>
+                    {% for item in characteristics %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="footer">
+    &copy; {{ year if year else '2024' }} EV Analytics Dashboard. All rights reserved.
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

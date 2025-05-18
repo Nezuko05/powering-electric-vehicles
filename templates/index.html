@@ -2,371 +2,311 @@
 <html lang="en">
 
 <head>
-    <title>Webpage Design</title>
+    <title>EV Power - Electric Vehicle Solutions</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         .main {
             width: 100%;
-            background-position: center;
+            background-position: right center;
             background-size: cover;
             height: 100vh;
-            background-image: url( "https://png.pngtree.com/thumb_back/fh260/background/20230713/pngtree-d-illustration-of-an-electric-vehicle-charging-station-in-a-garage-image_3868560.jpg");
-            
-            
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.5)), url("https://png.pngtree.com/thumb_back/fh260/background/20230713/pngtree-d-illustration-of-an-electric-vehicle-charging-station-in-a-garage-image_3868560.jpg");
+            position: relative;
+            overflow: hidden;
         }
 
         .navbar {
-            width: 1200px;
+            width: 100%;
             height: 75px;
             margin: auto;
+            padding: 0 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            height: 60px;
+            background: rgba(0, 0, 0, 0.95);
         }
 
         .icon {
-            width: 200px;
-            float: left;
-            height: 70px;
-            margin-left: 0;
-        }
-
-        .logo {
-            color: lightgreen;
-            font-size: 35px;
-            font-family: Arial;
-            padding-left: 20px;
-            float: left;
-            padding-top: 10px;
-            margin-top: 5px
-        }
-
-        .menu {
-            width: 400px;
-            float: left;
-            height: 70px;
-        }
-
-        ul {
-            float: left;
             display: flex;
-            justify-content: center;
             align-items: center;
         }
 
-        ul li {
+        .logo {
+            color: #00ff9d;
+            font-size: 35px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #00ff9d;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+        }
+
+        ul {
+            display: flex;
+            gap: 30px;
             list-style: none;
-            margin-left: 62px;
-            margin-top: 27px;
-            font-size: 14px;
         }
 
         ul li a {
             text-decoration: none;
             color: #fff;
-            font-family: Arial;
-            font-weight: bold;
-            transition: 0.4s ease-in-out;
-        }
-
-        ul li a:hover {
-            color: #ff7200;
-        }
-
-        .search {
-            width: 330px;
-            float: left;
-            margin-left: 270px;
-        }
-
-        .srch {
-            font-family: 'Times New Roman';
-            width: 200px;
-            height: 40px;
-            background: transparent;
-            border: 1px solid #ff7200;
-            margin-top: 20px;
-            color: #fff;
-            border-right: none;
+            font-family: 'Arial', sans-serif;
+            font-weight: 500;
             font-size: 16px;
-            float: left;
-            padding: 10px;
-            border-bottom-left-radius: 5px;
-            border-top-left-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
         }
 
-        .btn {
-            width: 100px;
-            height: 40px;
-            background: #ff7200;
-            border: 2px solid #ff7200;
-            margin-top: 20px;
-            color: #fff;
-            font-size: 15px;
-            border-bottom-right-radius: 5px;
-            border-bottom-right-radius: 10px;
-            transition: 0.2s ease;
-            cursor: pointer;
+        ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00ff9d;
+            transition: width 0.3s ease;
         }
 
-        .btn:hover {
-            color: #000;
-        }
-
-        .btn:focus {
-            outline: none;
-        }
-
-        .srch:focus {
-            outline: none;
+        ul li a:hover::after {
+            width: 100%;
         }
 
         .content {
-            width: 1200px;
-            height: auto;
+            width: 100%;
+            max-width: 1200px;
             margin: auto;
             color: #fff;
             position: relative;
-        }
-
-        .content .par {
-            padding-left: 20px;
-            padding-bottom: 25px;
-            font-family: Arial;
-            letter-spacing: 1.2px;
-            line-height: 30px;
+            padding-top: 150px;
+            padding-left: 50px;
         }
 
         .content h1 {
-            font-family: 'Times New Roman';
-            font-size: 50px;
-            padding-left: 20px;
-            margin-top: 9%;
-            letter-spacing: 2px;
+            font-family: 'Arial', sans-serif;
+            font-size: 60px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .content .cn {
-            width: 160px;
-            height: 40px;
-            background: #ff7200;
-            border: none;
-            margin-bottom: 10px;
-            margin-left: 20px;
+        .content .par {
+            font-family: 'Arial', sans-serif;
             font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: .4s ease;
-
-        }
-
-        .content .cn a {
-            text-decoration: none;
-            color: #000;
-            transition: .3s ease;
-        }
-
-        .cn:hover {
-            background-color: #fff;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.3s forwards;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
         }
 
         .content span {
-            color: #ff7200;
-            font-size: 65px
+            color: #00ff9d;
+            font-weight: 900;
         }
 
-        .form {
-            width: 250px;
-            height: 380px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8)50%, rgba(0, 0, 0, 0.8)50%);
-            position: absolute;
-            top: 60%;
-            left: 70%;
-            transform: translate(-50%, -50%);
-            border-radius: 10px;
-            padding: 25px;
-            background-image: url("https://static.vecteezy.com/system/resources/thumbnails/040/863/509/small_2x/dark-abstract-geometric-technology-background-with-a-repeating-minimalist-pattern-of-blue-square-shapes-and-dashed-lines-full-hd-and-looping-textured-tech-background-free-video.jpg");
-           
-        }
-
-        .form h2 {
-            width: 220px;
-            font-family: sans-serif;
-            text-align: center;
-            color: #ff7200;
-            font-size: 22px;
-            background-color: #fff;
-            border-radius: 10px;
-            margin: 2px;
-            padding: 8px;
-            
-        }
-
-        .form input {
-            width: 240px;
-            height: 35px;
-            background: transparent;
-            border-bottom: 1px solid #ff7200;
-            border-top: none;
-            border-right: none;
-            border-left: none;
-            color: #fff;
-            font-size: 15px;
-            letter-spacing: 1px;
-            margin-top: 30px;
-            font-family: sans-serif;
-        }
-
-        .form input:focus {
-            outline: none;
-        }
-
-        ::placeholder {
-            color: #fff;
-            font-family: Arial;
-        }
-
-        .btnn {
-            width: 240px;
-            height: 40px;
-            background: #ff7200;
-            border: none;
-            margin-top: 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #fff;
-            transition: 0.4s ease;
-        }
-
-        .btnn:hover {
-            background: #fff;
-            color: #ff7200;
-        }
-
-        .btnn a {
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-        }
-
-        .form .link {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
-            padding-top: 10px;
-            text-align: center;
-            padding-bottom: 20px;
-            color: #ff7200;
-        }
-
-        .form .link a {
-            text-decoration: none;
-            color: #ff7200;
-        }
-
-        .liw {
-            padding-top: 15px;
-            padding-bottom: 10px;
-            text-align: center;
-
-        }
-
-        .icons a {
-            text-decoration: none;
-            color: #fff;
-            padding-left: 20px;
-        }
-
-        .icons ion-icon {
-            color: #fff;
-            font-size: 30px;
-            padding-left: 14px;
-            padding-top: 5px;
-            transition: 0.3s ease;
-        }
-
-        .icons ion-icon:hover {
-            color: #ff7200;
-        }
-        .nav-buttons {
-            margin-right:auto;
+        .cta-buttons {
             display: flex;
-            gap: 15px;
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.6s forwards;
         }
-        .btn {
-            padding: 10px 20px;
+
+        .cta-button {
+            padding: 15px 30px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: 0.3s;
-            margin-right: auto;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-/* Login Button */
-.login {
-    background-color: #ff7200;
-    color: white;
-}
+        .primary-btn {
+            background: #00ff9d;
+            color: #000;
+        }
 
-.signup {
-    background-color: #ff7200;
-    color: white;
-}
+        .primary-btn:hover {
+            background: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 255, 157, 0.3);
+        }
 
-.btn:hover {
-    opacity: 0.8;
-}    
+        .secondary-btn {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #00ff9d;
+        }
 
+        .secondary-btn:hover {
+            background: #00ff9d;
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 255, 157, 0.3);
+        }
 
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .content h1 {
+                font-size: 40px;
+            }
+
+            .content .par {
+                font-size: 16px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <div class="main">
-        <div class="navbar">
+        <div class="floating-elements">
+            <div class="floating-element" style="width: 100px; height: 100px; top: 20%; left: 10%;"></div>
+            <div class="floating-element" style="width: 150px; height: 150px; top: 60%; right: 15%;"></div>
+            <div class="floating-element" style="width: 80px; height: 80px; bottom: 20%; left: 20%;"></div>
+        </div>
+
+        <nav class="navbar">
             <div class="icon">
                 <h2 class="logo">EV Power</h2>
             </div>
 
             <div class="menu">
                 <ul>
-                     <li class="nav-item">
-                        <a class="nav-link active" href="/"><i class="fas fa-home me-1"></i>HOME</a>
-                    </li>
+                    <li><a href="/" class="active">HOME</a></li>
                     <li><a href="/about">ABOUT</a></li>
-                    
-                    <li><a href="dashboard">DASHBOARD</a></li>
+                    <li><a href="/dashboard">DASHBOARD</a></li>
                     <li><a href="/contact">CONTACT</a></li>
-                    <li><a href="/login">LOGIN</a></li>  
+                    <li><a href="/login">LOGIN</a></li>
                     <li><a href="/register">SIGNUP</a></li>
-            
-                 
-                  
-                    
                 </ul>
             </div>
-        
-           
+        </nav>
 
-
-           
-        </div>
         <div class="content">
+            <h1>Powering<br><span>Electric Vehicles</span></h1>
+            <p class="par">You have to have a better car.<br>It's not just the ideological decision of buying an EV.<br>It's about buying a better car.<br><b>-Daniel Kirchert</b></p>
+            
+            <div class="cta-buttons">
+                <a href="/dashboard" class="cta-button primary-btn">Explore Dashboard</a>
+                <a href="/register" class="cta-button secondary-btn">Get Started</a>
+            </div>
+        </div>
+    </div>
 
-            <h1>Powering<br><span>Electric Vehicles</span> </h1>
-            <p class="par">You have to have a better car.<br>It's not just the ideological decision of buying an EV.<br>It's about buying a better car.<br><b>-Daniel Kirchert</b>
-            </p>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init();
 
-           
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
 
-           
+        // Add floating elements dynamically
+        function createFloatingElements() {
+            const container = document.querySelector('.floating-elements');
+            for (let i = 0; i < 5; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                element.style.width = Math.random() * 100 + 50 + 'px';
+                element.style.height = element.style.width;
+                element.style.top = Math.random() * 100 + '%';
+                element.style.left = Math.random() * 100 + '%';
+                element.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(element);
+            }
+        }
+
+        createFloatingElements();
+    </script>
 </body>
-<footer></footer>
-             
-   
 
 </html>
