@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Charging Pattern Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #141414;
+            --card-bg: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00ff9d;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--darker-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            color: var(--accent-color) !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            padding: 2rem 0;
+        }
+
+        .form-control {
+            background-color: var(--card-bg);
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .form-control:focus {
+            background-color: var(--card-bg);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 157, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--darker-bg);
+        }
+
+        .btn-primary:hover {
+            background-color: #00cc7d;
+            border-color: #00cc7d;
+        }
+
+        .alert-success {
+            background-color: var(--card-bg);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">EV Analytics</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mb-4">EV Charging Pattern Prediction</h2>
+            <form method="POST" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="vehicleModel">Vehicle Model</label>                        <select class="form-control" id="vehicleModel" name="vehicleModel" required>
+                            <option value="BMW i3">BMW i3</option>
+                            <option value="Chevy Bolt">Chevy Bolt</option>
+                            <option value="Hyundai Kona">Hyundai Kona</option>
+                            <option value="Nissan Leaf">Nissan Leaf</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="batteryCapacity">Battery Capacity (kWh)</label>
+                        <input type="number" class="form-control" id="batteryCapacity" name="batteryCapacity" min="50" max="110" step="0.1" placeholder="e.g. 75.0" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="location">Charging Station Location</label>                        <select class="form-control" id="location" name="location" required>
+                            <option value="Chicago">Chicago</option>
+                            <option value="Houston">Houston</option>
+                            <option value="Los Angeles">Los Angeles</option>
+                            <option value="San Francisco">San Francisco</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="energyConsumed">Energy Consumed (kWh)</label>
+                        <input type="number" class="form-control" id="energyConsumed" name="energyConsumed" min="10" max="80" step="0.1" placeholder="e.g. 40.0" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">                        <label for="chargingDuration">Charging Duration (hours)</label>
+                        <input type="number" class="form-control" id="chargingDuration" name="chargingDuration" min="0.5" max="4" step="0.1" placeholder="e.g. 2.0" required>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="chargingRate">Charging Rate (kW)</label>
+                        <input type="number" class="form-control" id="chargingRate" name="chargingRate" min="10" max="40" step="0.1" placeholder="e.g. 25.0" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">                        <label for="chargingCost">Charging Cost (USD)</label>
+                        <input type="number" class="form-control" id="chargingCost" name="chargingCost" min="5" max="40" step="0.01" placeholder="e.g. 20.00" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="timeOfDay">Time of Day</label>                        <select class="form-control" id="timeOfDay" name="timeOfDay" required>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="dayOfWeek">Day of Week</label>
+                        <select class="form-control" id="dayOfWeek" name="dayOfWeek" required>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="socStart">State of Charge Start (%)</label>
+                        <input type="number" min="0" max="100" step="1" class="form-control" id="socStart" name="socStart" placeholder="e.g. 30" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">                        <label for="socEnd">State of Charge End (%)</label>
+                        <input type="number" min="0" max="100" step="1" class="form-control" id="socEnd" name="socEnd" placeholder="e.g. 80" required>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="distance">Distance Driven (km)</label>
+                        <input type="number" class="form-control" id="distance" name="distance" min="50" max="300" step="1" placeholder="e.g. 150" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">                        <label for="temperature">Temperature (°C)</label>
+                        <input type="number" class="form-control" id="temperature" name="temperature" min="-10" max="40" step="0.1" placeholder="e.g. 20.0" required>
+                    </div>
+                    <div class="col-md-6 mb-3">                        <label for="vehicleAge">Vehicle Age (years)</label>
+                        <input type="number" class="form-control" id="vehicleAge" name="vehicleAge" min="0" max="5" step="0.1" placeholder="e.g. 2.0" required>
+                    </div>
+                </div>
+                <div class="row">                    <div class="col-md-6 mb-3">
+                        <label for="chargerType">Charger Type</label>
+                        <select class="form-control" id="chargerType" name="chargerType" required>
+                            <option value="DC Fast Charger">DC Fast Charger</option>
+                            <option value="Level 1">Level 1</option>
+                            <option value="Level 2">Level 2</option>
+                        </select>
+                    </div>                    <div class="col-md-6 mb-3">
+                        <label for="userType">User Type</label>
+                        <select class="form-control" id="userType" name="userType" required>
+                            <option value="Casual Driver">Casual Driver</option>
+                            <option value="Commuter">Commuter</option>
+                            <option value="Long-Distance Traveler">Long-Distance Traveler</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Predict Charging Pattern</button>
+            </form>
+
+            {% if prediction %}
+            <div class="mt-5">
+                <h3>Prediction Result</h3>
+                <div class="alert alert-success">
+                    <h4>User Profile: {{ prediction.cluster_name }}</h4>
+                    <h5>Characteristics:</h5>
+                    <ul>
+                        {% for char in prediction.characteristics %}
+                            <li>{{ char }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
