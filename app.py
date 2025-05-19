@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 import pandas as pd
 import plotly.express as px
@@ -93,19 +93,21 @@ cluster_characteristics = {
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', logged_in='user_id' in session)
 
 
 @app.route('/login',methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['email or username']
+        username = request.form['email_or_username']
         password = request.form['password']
         user = User.query.filter_by(username=username).first() or User.query.filter_by(email=username).first()
         if not user:
             flash('User not found. Please register.', 'danger')
             return redirect(url_for('register'))
         if user and user.check_password(password):
+            session['user_id'] = user.id
+            session['username'] = user.username
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -917,6 +919,12 @@ def predict():
             return render_template('predict.html')
 
     return render_template('predict.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

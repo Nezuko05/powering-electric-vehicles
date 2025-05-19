@@ -258,8 +258,12 @@
                     <li><a href="/about">ABOUT</a></li>
                     <li><a href="/dashboard">DASHBOARD</a></li>
                     <li><a href="/contact">CONTACT</a></li>
+                    {% if logged_in %}
+                    <li><a href="/logout">LOGOUT</a></li>
+                    {% else %}
                     <li><a href="/login">LOGIN</a></li>
                     <li><a href="/register">SIGNUP</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>
